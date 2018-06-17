@@ -15,7 +15,7 @@ const PersonSchema = mongoose.Schema({
     age: Number
 });
 
-const Person = mongoose.model('Person', PersonSchema);
+const Person = mongoose.model('person', PersonSchema);
 
 const express = require('express');
 const app = express();
@@ -32,19 +32,40 @@ app.get('/', (req, res) => {
     });
 });
 
-app.get('/:id', (req, res) => {
-    Person.findOne({ _id: req.params.id }, (err, person) => {
-        if(err) return res.json(err);
-        res.render('read', { person: person });
-    })
-})
-
 app.get('/create', (req, res) => {
     res.render('create');
 });
 
 app.post('/create', (req, res) => {
     Person.create(req.body, (err, people) => {
+        if(err) return res.json(err);
+        res.redirect('/');
+    });
+});
+
+app.get('/:id', (req, res) => {
+    Person.findOne({ _id: req.params.id }, (err, person) => {
+        if(err) return res.json(err);
+        res.render('read', { person: person });
+    });
+});
+
+app.get('/delete/:id', (req, res) => {
+    Person.deleteOne({ _id: req.params.id }, (err, person) => {
+        if(err) return res.json(err);
+        res.redirect('/');
+    });
+});
+
+app.get('/update/:id', (req, res) => {
+    Person.findOne({ _id: req.params.id }, (err, person) => {
+        if(err) return res.json(err);
+        res.render('update', { person: person });
+    });
+});
+
+app.post('/update/:id', (req, res) => {
+    Person.updateOne({ _id: req.params.id }, { $set: { name: req.body.name , age: req.body.age } }, (err, person) => {
         if(err) return res.json(err);
         res.redirect('/');
     });
